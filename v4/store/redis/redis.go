@@ -3,6 +3,7 @@ package redis
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -114,6 +115,9 @@ func (r *rkv) Read(key string, opts ...store.ReadOption) ([]*store.Record, error
 	}
 
 	if len(keys) == 1 {
+		if errors.Is(err, redis.Nil) {
+			return records, store.ErrNotFound
+		}
 		return records, err
 	}
 
